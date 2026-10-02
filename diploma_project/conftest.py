@@ -6,6 +6,7 @@ from typing import Generator
 import pytest
 import requests
 from dotenv import load_dotenv
+from selenium.webdriver import Chrome
 
 # Загружаем .env из папки проекта (а не из текущей директории)
 env_path = Path(__file__).parent / ".env"
@@ -78,3 +79,20 @@ def assignee_id() -> str:
         str: ID исполнителя из .env.
     """
     return os.getenv("ASSIGNEE_ID", "")
+
+@pytest.fixture
+def driver() -> Generator[Chrome, None, None]:
+    """Создаёт драйвер Chrome для UI-тестов.
+
+    Yields:
+        Chrome: драйвер браузера.
+    """
+    from selenium.webdriver import Chrome
+    from selenium.webdriver.chrome.options import Options
+
+    options = Options()
+    options.add_argument("--start-maximized")
+
+    drv = Chrome(options=options)
+    yield drv
+    drv.quit()
