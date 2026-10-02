@@ -6,12 +6,14 @@ import pytest
 
 from utils.api_client import ApiClient
 
+
 @pytest.fixture
 def api(base_url: str, api_headers: dict) -> Generator[ApiClient, None, None]:
     """Создаёт клиент API для тестов."""
     client = ApiClient(base_url, api_headers)
     yield client
     client.close()
+
 
 @allure.feature("YouGile API: Задачи")
 @allure.title("Создание задачи с валидными данными")
@@ -23,6 +25,7 @@ def test_create_task(api: ApiClient, column_id: str) -> None:
     with allure.step("Статус 201 и есть id"):
         assert response.status_code == 201
         assert "id" in response.json()
+
 
 @allure.feature("YouGile API: Задачи")
 @allure.title("Получение задачи по ID")
@@ -37,6 +40,7 @@ def test_get_task(api: ApiClient, column_id: str) -> None:
         assert response.status_code == 200
         assert response.json()["id"] == task_id
 
+
 @allure.feature("YouGile API: Задачи")
 @allure.title("Обновление названия задачи")
 @allure.severity(allure.severity_level.NORMAL)
@@ -50,6 +54,7 @@ def test_update_task(api: ApiClient, column_id: str) -> None:
     with allure.step("Статус 200 и название обновилось"):
         assert response.status_code == 200
         assert api.get_task(task_id).json()["title"] == new_title
+
 
 @allure.feature("YouGile API: Задачи")
 @allure.title("Создание задачи без авторизации (негативный)")
@@ -68,6 +73,7 @@ def test_create_task_unauthorized(
         )
     with allure.step("Статус 401"):
         assert response.status_code == 401
+
 
 @allure.feature("YouGile API: Задачи")
 @allure.title("Создание задачи без title (негативный)")

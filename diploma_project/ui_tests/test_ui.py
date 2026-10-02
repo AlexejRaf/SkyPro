@@ -7,6 +7,7 @@ from selenium.webdriver import Chrome
 
 from pages.login_page import LoginPage
 
+
 @pytest.fixture
 def login_page(driver: Chrome) -> LoginPage:
     """Создаёт LoginPage для тестов.
@@ -20,6 +21,7 @@ def login_page(driver: Chrome) -> LoginPage:
     url = os.getenv("UI_URL", "https://ru.yougile.com")
     return LoginPage(driver, url)
 
+
 @allure.feature("YouGile UI: Авторизация")
 @allure.title("Открытие формы логина")
 @allure.severity(allure.severity_level.CRITICAL)
@@ -31,6 +33,7 @@ def test_open_login_form(login_page: LoginPage) -> None:
         assert login_page.driver.find_elements(
             *login_page.EMAIL_INPUT
         ), "Поле email не найдено"
+
 
 @allure.feature("YouGile UI: Авторизация")
 @allure.title("Успешная авторизация")
@@ -46,6 +49,7 @@ def test_login_positive(login_page: LoginPage) -> None:
         )
     with allure.step("Проверить, что пользователь вошёл"):
         assert login_page.is_logged_in(), "Не удалось войти"
+
 
 @allure.feature("YouGile UI: Авторизация")
 @allure.title("Неуспешная авторизация")
@@ -64,6 +68,7 @@ def test_login_negative(login_page: LoginPage) -> None:
             "Пользователь вошёл с неверным паролем!"
         )
 
+
 @allure.feature("YouGile UI: Авторизация")
 @allure.title("Проверка URL после клика 'Войти'")
 @allure.severity(allure.severity_level.NORMAL)
@@ -75,6 +80,7 @@ def test_sign_in_button_works(login_page: LoginPage) -> None:
         assert login_page.driver.find_elements(
             *login_page.PASSWORD_INPUT
         ), "Поле пароля не найдено"
+
 
 @allure.feature("YouGile UI: Авторизация")
 @allure.title("Проверка заголовка страницы")

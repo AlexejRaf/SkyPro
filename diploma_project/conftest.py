@@ -12,6 +12,7 @@ from selenium.webdriver import Chrome
 env_path = Path(__file__).parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
+
 @pytest.fixture(scope="session")
 def base_url() -> str:
     """Возвращает базовый URL API.
@@ -24,6 +25,7 @@ def base_url() -> str:
         pytest.fail("BASE_URL не задан в .env")
     return url
 
+
 @pytest.fixture(scope="session")
 def api_token() -> str:
     """Возвращает API-токен.
@@ -35,6 +37,7 @@ def api_token() -> str:
     if not token:
         pytest.fail("API_TOKEN не задан в .env")
     return token
+
 
 @pytest.fixture(scope="session")
 def api_headers(api_token: str) -> dict:
@@ -51,6 +54,7 @@ def api_headers(api_token: str) -> dict:
         "Authorization": f"Bearer {api_token}",
     }
 
+
 @pytest.fixture(scope="session")
 def api_session() -> Generator[requests.Session, None, None]:
     """Создаёт сессию requests для API-запросов.
@@ -62,6 +66,7 @@ def api_session() -> Generator[requests.Session, None, None]:
     yield session
     session.close()
 
+
 @pytest.fixture(scope="session")
 def column_id() -> str:
     """Возвращает ID колонки для создания задач.
@@ -71,6 +76,7 @@ def column_id() -> str:
     """
     return os.getenv("COLUMN_ID", "")
 
+
 @pytest.fixture(scope="session")
 def assignee_id() -> str:
     """Возвращает ID исполнителя для назначения.
@@ -79,6 +85,7 @@ def assignee_id() -> str:
         str: ID исполнителя из .env.
     """
     return os.getenv("ASSIGNEE_ID", "")
+
 
 @pytest.fixture
 def driver() -> Generator[Chrome, None, None]:

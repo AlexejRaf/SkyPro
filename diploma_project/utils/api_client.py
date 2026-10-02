@@ -3,6 +3,7 @@ from typing import Any, Optional
 
 import requests
 
+
 class ApiClient:
     """Клиент для API-запросов к YouGile."""
 
