@@ -79,6 +79,26 @@ class ApiClient:
             json=payload,
         )
 
+    def create_task_without_auth(
+        self,
+        title: str,
+        column_id: str,
+    ) -> requests.Response:
+        """Создаёт задачу без заголовка Authorization.
+
+        Args:
+            title: название задачи.
+            column_id: ID колонки.
+
+        Returns:
+            requests.Response: ответ сервера.
+        """
+        return requests.post(
+            f"{self.base_url}/tasks",
+            json={"title": title, "columnId": column_id},
+            headers={"Content-Type": "application/json"},
+        )
+
     def close(self) -> None:
         """Закрывает сессию."""
         self.session.close()

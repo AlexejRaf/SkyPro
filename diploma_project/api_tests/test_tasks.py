@@ -18,6 +18,7 @@ def api(base_url: str, api_headers: dict) -> Generator[ApiClient, None, None]:
 @allure.feature("YouGile API: Задачи")
 @allure.title("Создание задачи с валидными данными")
 @allure.severity(allure.severity_level.CRITICAL)
+@pytest.mark.api
 def test_create_task(api: ApiClient, column_id: str) -> None:
     """Позитивный: создание задачи."""
     with allure.step("POST /tasks"):
@@ -30,6 +31,7 @@ def test_create_task(api: ApiClient, column_id: str) -> None:
 @allure.feature("YouGile API: Задачи")
 @allure.title("Получение задачи по ID")
 @allure.severity(allure.severity_level.NORMAL)
+@pytest.mark.api
 def test_get_task(api: ApiClient, column_id: str) -> None:
     """Позитивный: получение задачи по ID."""
     with allure.step("Создать задачу"):
@@ -44,6 +46,7 @@ def test_get_task(api: ApiClient, column_id: str) -> None:
 @allure.feature("YouGile API: Задачи")
 @allure.title("Обновление названия задачи")
 @allure.severity(allure.severity_level.NORMAL)
+@pytest.mark.api
 def test_update_task(api: ApiClient, column_id: str) -> None:
     """Позитивный: обновление названия."""
     with allure.step("Создать задачу"):
@@ -59,17 +62,14 @@ def test_update_task(api: ApiClient, column_id: str) -> None:
 @allure.feature("YouGile API: Задачи")
 @allure.title("Создание задачи без авторизации (негативный)")
 @allure.severity(allure.severity_level.NORMAL)
+@pytest.mark.api
 def test_create_task_unauthorized(
-    base_url: str, column_id: str
+    api: ApiClient, column_id: str
 ) -> None:
     """Негативный: без заголовка Authorization."""
-    import requests
-
     with allure.step("POST /tasks без Authorization"):
-        response = requests.post(
-            f"{base_url}/tasks",
-            json={"title": "Без авторизации", "columnId": column_id},
-            headers={"Content-Type": "application/json"},
+        response = api.create_task_without_auth(
+            "Без авторизации", column_id
         )
     with allure.step("Статус 401"):
         assert response.status_code == 401
@@ -78,6 +78,7 @@ def test_create_task_unauthorized(
 @allure.feature("YouGile API: Задачи")
 @allure.title("Создание задачи без title (негативный)")
 @allure.severity(allure.severity_level.NORMAL)
+@pytest.mark.api
 def test_create_task_without_title(api: ApiClient, column_id: str) -> None:
     """Негативный: без обязательного поля title."""
     with allure.step("POST /tasks без title"):

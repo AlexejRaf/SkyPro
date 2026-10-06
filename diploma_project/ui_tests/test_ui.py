@@ -22,9 +22,31 @@ def login_page(driver: Chrome) -> LoginPage:
     return LoginPage(driver, url)
 
 
+@pytest.fixture
+def authorized_driver(
+    driver: Chrome,
+    login_page: LoginPage,
+) -> Chrome:
+    """Авторизует пользователя и возвращает драйвер.
+
+    Args:
+        driver: драйвер Chrome.
+        login_page: страница авторизации.
+
+    Returns:
+        Chrome: авторизованный драйвер.
+    """
+    login_page.open().login(
+        os.getenv("UI_USERNAME", ""),
+        os.getenv("UI_PASSWORD", ""),
+    )
+    return driver
+
+
 @allure.feature("YouGile UI: Авторизация")
 @allure.title("Открытие формы логина")
 @allure.severity(allure.severity_level.CRITICAL)
+@pytest.mark.ui
 def test_open_login_form(login_page: LoginPage) -> None:
     """Позитивный: форма логина открывается."""
     with allure.step("Открыть главную и нажать 'Войти'"):
@@ -38,6 +60,7 @@ def test_open_login_form(login_page: LoginPage) -> None:
 @allure.feature("YouGile UI: Авторизация")
 @allure.title("Успешная авторизация")
 @allure.severity(allure.severity_level.CRITICAL)
+@pytest.mark.ui
 def test_login_positive(login_page: LoginPage) -> None:
     """Позитивный: вход с валидными данными."""
     with allure.step("Открыть форму логина"):
@@ -54,6 +77,7 @@ def test_login_positive(login_page: LoginPage) -> None:
 @allure.feature("YouGile UI: Авторизация")
 @allure.title("Неуспешная авторизация")
 @allure.severity(allure.severity_level.NORMAL)
+@pytest.mark.ui
 def test_login_negative(login_page: LoginPage) -> None:
     """Негативный: вход с неверным паролем."""
     with allure.step("Открыть форму логина"):
@@ -72,6 +96,7 @@ def test_login_negative(login_page: LoginPage) -> None:
 @allure.feature("YouGile UI: Авторизация")
 @allure.title("Проверка URL после клика 'Войти'")
 @allure.severity(allure.severity_level.NORMAL)
+@pytest.mark.ui
 def test_sign_in_button_works(login_page: LoginPage) -> None:
     """Позитивный: клик по 'Войти' открывает форму."""
     with allure.step("Открыть главную и кликнуть 'Войти'"):
@@ -85,9 +110,20 @@ def test_sign_in_button_works(login_page: LoginPage) -> None:
 @allure.feature("YouGile UI: Авторизация")
 @allure.title("Проверка заголовка страницы")
 @allure.severity(allure.severity_level.MINOR)
+@pytest.mark.ui
 def test_page_title(login_page: LoginPage) -> None:
     """Позитивный: заголовок страницы непустой."""
     with allure.step("Открыть главную"):
         login_page.open()
     with allure.step("Проверить заголовок"):
         assert login_page.driver.title, "Заголовок страницы пустой"
+
+
+@allure.feature("YouGile UI: Проект")
+@allure.title("Проверка авторизованного состояния")
+@allure.severity(allure.severity_level.NORMAL)
+@pytest.mark.ui
+def test_authorized_state(authorized_driver: Chrome) -> None:
+    """Позитивный: пользователь авторизован через фикстуру."""
+    with allure.step("Проверить, что URL содержит yougile"):
+        assert "yougile" in authorized_driver.current_url.lower()
